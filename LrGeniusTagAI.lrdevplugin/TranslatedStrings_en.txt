@@ -96,6 +96,7 @@
 "$$$/lrc-ai-assistant/PluginInfoDialogSections/enablePerfLogging=Enable performance logging"
 "$$$/lrc-ai-assistant/PluginInfoDialogSections/periodUpdateCheck=Periodically check for Updates"
 "$$$/lrc-ai-assistant/PluginInfoDialogSections/folderNames=Folder names"
+"$$$/lrc-ai-assistant/PluginInfoDialogSections/collectionNames=Collection names"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/aiBehavior=AI behavior"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/beCoherent=Be coherent"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/beCreative=Be creative"

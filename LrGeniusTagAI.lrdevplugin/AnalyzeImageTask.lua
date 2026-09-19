@@ -50,6 +50,9 @@ local function exportAndAnalyzePhoto(photo, ctx, progressScope)
         metadata.keywords = photo:getFormattedMetadata("keywordTagsForExport")
         local orignalFilePath = photo:getRawMetadata("path")
         metadata.folderNames = Util.getStringsFromRelativePath(orignalFilePath)
+        if prefs.submitCollectionNames then
+            metadata.collectionNames = Util.getCollectionNamesForPhoto(photo)
+        end
 
         if success then -- Export successful
             
