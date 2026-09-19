@@ -112,6 +112,10 @@ function ChatGptAPI:analyzeImage(filePath, metadata)
             log:trace("Submit folder names enabled")
             task = task .. "\nThis photo is located in the following folders: " .. metadata.folderNames
         end
+        if prefs.submitCollectionNames and metadata.collectionNames ~= nil then
+            log:trace("Submit collection names: " .. metadata.collectionNames)
+            task = task .. "\nThis photo is in the following collections: " .. metadata.collectionNames
+        end
     end
 
     local systemInstruction = AiModelAPI.addKeywordHierarchyToSystemInstruction()

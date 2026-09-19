@@ -79,6 +79,33 @@ function Util.getStringsFromRelativePath(absolutePath)
     end
 end
 
+function Util.getCollectionNamesForPhoto(photo)
+    local collections = photo:getContainedCollections()
+    if collections == nil then
+        return nil
+    end
+    local paths = {}
+    local seen = {}
+    for _, collection in ipairs(collections) do
+        local parts = { collection:getName() }
+        local parent = collection:getParent()
+        while parent do
+            table.insert(parts, 1, parent:getName())
+            parent = parent:getParent()
+        end
+        local path = table.concat(parts, ' / ')
+        if path ~= '' and not seen[path] then
+            seen[path] = true
+            table.insert(paths, path)
+        end
+    end
+    if #paths == 0 then
+        return nil
+    end
+    table.sort(paths)
+    return table.concat(paths, ', ')
+end
+
 function Util.getLogfilePath()
     local filename = "LrGeniusTagAI.log"
     local macPath14 = LrPathUtils.getStandardFilePath('home') .. "/Library/Logs/Adobe/Lightroom/LrClassicLogs/"

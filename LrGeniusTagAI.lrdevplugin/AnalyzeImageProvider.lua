@@ -423,6 +423,7 @@ function AnalyzeImageProvider.showPreflightDialog(ctx)
     propertyTable.submitGPS = prefs.submitGPS
     propertyTable.submitKeywords = prefs.submitKeywords
     propertyTable.submitFolderName = prefs.submitFolderName
+    propertyTable.submitCollectionNames = prefs.submitCollectionNames
 
     propertyTable.temperature = prefs.temperature
 
@@ -556,6 +557,13 @@ function AnalyzeImageProvider.showPreflightDialog(ctx)
             f:static_text {
                 title = LOC "$$$/lrc-ai-assistant/PluginInfoDialogSections/folderNames=Folder names",
             },
+            f:checkbox {
+                value = bind 'submitCollectionNames',
+                width = share 'checkboxWidth',
+            },
+            f:static_text {
+                title = LOC "$$$/lrc-ai-assistant/PluginInfoDialogSections/collectionNames=Collection names",
+            },
         },
         f:row {
             f:static_text {
@@ -659,6 +667,7 @@ function AnalyzeImageProvider.showPreflightDialog(ctx)
         prefs.submitGPS = propertyTable.submitGPS
         prefs.submitKeywords = propertyTable.submitKeywords
         prefs.submitFolderName = propertyTable.submitFolderName
+        prefs.submitCollectionNames = propertyTable.submitCollectionNames
 
         prefs.temperature = propertyTable.temperature
 

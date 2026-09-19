@@ -64,6 +64,8 @@ function PluginInfoDialogSections.startDialog(propertyTable)
 
     propertyTable.submitFolderName = prefs.submitFolderName
 
+    propertyTable.submitCollectionNames = prefs.submitCollectionNames
+
     propertyTable.enableValidation = prefs.enableValidation
 
 end
@@ -380,6 +382,13 @@ function PluginInfoDialogSections.sectionsForTopOfDialog(f, propertyTable)
                     f:static_text {
                         title = LOC "$$$/lrc-ai-assistant/PluginInfoDialogSections/folderNames=Folder names",
                     },
+                    f:checkbox {
+                        value = bind 'submitCollectionNames',
+                        width = share 'checkboxWidth',
+                    },
+                    f:static_text {
+                        title = LOC "$$$/lrc-ai-assistant/PluginInfoDialogSections/collectionNames=Collection names",
+                    },
                 },
                 f:row {
                     f:spacer {
@@ -526,6 +535,7 @@ function PluginInfoDialogSections.endDialog(propertyTable)
     prefs.periodicalUpdateCheck = propertyTable.periodicalUpdateCheck
 
     prefs.submitFolderName = propertyTable.submitFolderName
+    prefs.submitCollectionNames = propertyTable.submitCollectionNames
 
     prefs.enableValidation = propertyTable.enableValidation
 end

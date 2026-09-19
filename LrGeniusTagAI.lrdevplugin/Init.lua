@@ -181,6 +181,10 @@ if _G.prefs.submitFolderName == nil then
     _G.prefs.submitFolderName = false
 end
 
+if _G.prefs.submitCollectionNames == nil then
+    _G.prefs.submitCollectionNames = false
+end
+
 function _G.JSON.assert(b, m)
     LrDialogs.showError("Error decoding JSON response.")
 end
