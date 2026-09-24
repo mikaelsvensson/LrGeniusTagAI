@@ -415,6 +415,7 @@ function AnalyzeImageProvider.showPreflightDialog(ctx)
     propertyTable.generateAltText = prefs.generateAltText
 
     propertyTable.enableValidation = prefs.enableValidation
+    propertyTable.applyResultsToStacks = prefs.applyResultsToStacks
 
     propertyTable.ai = prefs.ai
     propertyTable.showCosts = prefs.showCosts
@@ -628,6 +629,18 @@ function AnalyzeImageProvider.showPreflightDialog(ctx)
             },
         },
         f:row {
+            f:spacer {
+                width = share 'labelWidth',
+            },
+            f:checkbox {
+                value = bind 'applyResultsToStacks',
+                width = share 'checkboxWidth',
+            },
+            f:static_text {
+                title = LOC "$$$/lrc-ai-assistant/PluginInfoDialogSections/applyResultsToStacks=If photo is part of stack, apply results to entire stack",
+            },
+        },
+        f:row {
             f:static_text {
                 title = LOC "$$$/lrc-ai-assistant/AnalyzeImageTask/PhotoContextDialogData=Photo Context",
                 width = share 'labelWidth',
@@ -659,6 +672,7 @@ function AnalyzeImageProvider.showPreflightDialog(ctx)
         prefs.generateAltText = propertyTable.generateAltText
     
         prefs.enableValidation = propertyTable.enableValidation
+        prefs.applyResultsToStacks = propertyTable.applyResultsToStacks
     
         prefs.ai = propertyTable.ai
         prefs.showCosts = propertyTable.showCosts

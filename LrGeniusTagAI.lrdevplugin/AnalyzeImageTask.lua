@@ -5,7 +5,54 @@ PhotoContextData = ""
 PerfLogFile = nil
 
 
-local function exportAndAnalyzePhoto(photo, ctx, progressScope)
+local function getStackKey(photo)
+    if not photo:getRawMetadata("isInStackInFolder") then
+        return nil
+    end
+    local top = photo:getRawMetadata("topOfStackInFolderContainingPhoto")
+    if top ~= nil then
+        return top.localIdentifier
+    end
+    return photo.localIdentifier
+end
+
+local function applyAnalysisResults(photo, keywords, title, caption, altText, saveFlags, ai, source)
+    local fileName = photo:getFormattedMetadata('fileName')
+    log:trace("Saving metadata to " .. fileName .. " (" .. source .. ")")
+
+    photo.catalog:withWriteAccessDo(LOC "$$$/lrc-ai-assistant/AnalyzeImageTask/saveTitleCaption=Save AI generated title and caption", function()
+        if saveFlags.saveCaption and caption ~= nil and caption ~= "" then
+            photo:setRawMetadata('caption', caption)
+        end
+        if saveFlags.saveTitle and title ~= nil and title ~= "" then
+            photo:setRawMetadata('title', title)
+        end
+        if saveFlags.saveAltText and altText ~= nil and altText ~= "" then
+            photo:setRawMetadata('altTextAccessibility', altText)
+        end
+    end)
+
+    if keywords ~= nil and type(keywords) == 'table' and prefs.generateKeywords and saveFlags.saveKeywords then
+        local topKeyword = nil
+        if prefs.useKeywordHierarchy and prefs.useTopLevelKeyword then
+            photo.catalog:withWriteAccessDo("$$$/lrc-ai-assistant/AnalyzeImageTask/saveTopKeyword=Save AI generated keywords", function()
+                topKeyword = photo.catalog:createKeyword(ai.topKeyword, {}, false, nil, true)
+                photo:addKeyword(topKeyword)
+            end)
+        end
+        AnalyzeImageProvider.addKeywordRecursively(photo, keywords, topKeyword)
+    end
+
+    photo.catalog:withPrivateWriteAccessDo(function(context)
+            photo:setPropertyForPlugin(_PLUGIN, 'aiModel', prefs.ai)
+            local offset, daylight = LrDate.timeZone()
+            local lastRunDateTime = LrDate.timeToIsoDate(LrDate.currentTime() + offset)
+            photo:setPropertyForPlugin(_PLUGIN, 'aiLastRun', lastRunDateTime)
+        end
+    )
+end
+
+local function exportAndAnalyzePhoto(photo, ctx, progressScope, selectedSet)
     local tempDir = LrPathUtils.getStandardFilePath('temp')
     local photoName = LrPathUtils.leafName(photo:getFormattedMetadata('fileName'))
     local catalog = LrApplication.activeCatalog()
@@ -120,41 +167,32 @@ local function exportAndAnalyzePhoto(photo, ctx, progressScope)
                 end
             end
 
-            photo.catalog:withWriteAccessDo(LOC "$$$/lrc-ai-assistant/AnalyzeImageTask/saveTitleCaption=Save AI generated title and caption", function()
-                if saveCaption and caption ~= nil and caption ~= "" then
-                    photo:setRawMetadata('caption', caption)
-                end
-                if saveTitle and title ~= nil and title ~= "" then
-                    photo:setRawMetadata('title', title)
-                end
-                if saveAltText and altText ~= nil and altText ~= "" then
-                    photo:setRawMetadata('altTextAccessibility', altText)
-                end
-            end)
+            local saveFlags = {
+                saveCaption = saveCaption,
+                saveTitle = saveTitle,
+                saveAltText = saveAltText,
+                saveKeywords = saveKeywords,
+            }
 
-            if keywords ~= nil and type(keywords) == 'table' and prefs.generateKeywords and saveKeywords then
-                local topKeyword = nil
-                if prefs.useKeywordHierarchy and prefs.useTopLevelKeyword then
-                    photo.catalog:withWriteAccessDo("$$$/lrc-ai-assistant/AnalyzeImageTask/saveTopKeyword=Save AI generated keywords", function()
-                        topKeyword = photo.catalog:createKeyword(ai.topKeyword, {}, false, nil, true)
-                        photo:addKeyword(topKeyword)
-                    end)
+            applyAnalysisResults(photo, keywords, title, caption, altText, saveFlags, ai, "user selected, analyzed")
+
+            if prefs.applyResultsToStacks and photo:getRawMetadata("isInStackInFolder") then
+                local members = photo:getRawMetadata("stackInFolderMembers")
+                if members ~= nil then
+                    for _, member in ipairs(members) do
+                        if member.localIdentifier ~= photo.localIdentifier then
+                            local source = "stack membership"
+                            if selectedSet ~= nil and selectedSet[member.localIdentifier] then
+                                source = "user selected, stack membership"
+                            end
+                            applyAnalysisResults(member, keywords, title, caption, altText, saveFlags, ai, source)
+                        end
+                    end
                 end
-                AnalyzeImageProvider.addKeywordRecursively(photo, keywords, topKeyword)
             end
 
             -- Delete temp file.
             LrFileUtils.delete(path)
-
-            -- Save metadata informations to catalog.
-            catalog:withPrivateWriteAccessDo(function(context)
-                    log:trace("Save AI run model and date to metadata")
-                    photo:setPropertyForPlugin(_PLUGIN, 'aiModel', prefs.ai)
-                    local offset, daylight = LrDate.timeZone()
-                    local lastRunDateTime = LrDate.timeToIsoDate(LrDate.currentTime() + offset)
-                    photo:setPropertyForPlugin(_PLUGIN, 'aiLastRun', lastRunDateTime)
-                end
-            )
 
             if prefs.perfLogging and PerfLogFile ~= nil then
                 PerfLogFile:write(photoName .. ";" .. math.floor(stopTimeAnalyze - startTimeAnalyze) .. ";" .. prefs.ai .. ";" ..  prefs.prompt .. ";" .. 
@@ -211,6 +249,12 @@ LrTasks.startAsyncTask(function()
             functionContext = context,
         })
 
+        local selectedSet = {}
+        for _, selectedPhoto in ipairs(selectedPhotos) do
+            selectedSet[selectedPhoto.localIdentifier] = true
+        end
+        local processedStacks = {}
+
         local totalPhotos = #selectedPhotos
         local totalFailed = 0
         local errorMessages = {}
@@ -221,33 +265,51 @@ LrTasks.startAsyncTask(function()
             progressScope:setPortionComplete(i - 1, totalPhotos)
             progressScope:setCaption(LOC("$$$/lrc-ai-assistant/AnalyzeImageTask/caption=Analyzing photo with ^1. Photo ^2/^3", prefs.ai, tostring(i), tostring(totalPhotos)))
 
-            log:trace("Analyzing " .. photo:getFormattedMetadata('fileName'))
-
-            local success, inputTokens, outputTokens, cause, errorMessage = exportAndAnalyzePhoto(photo, context, progressScope)
-            if inputTokens ~= nil then
-                totalInputTokens = totalInputTokens + inputTokens
-            end
-            if outputTokens ~= nil then
-                totalOutputTokens = totalOutputTokens + outputTokens
-            end
-            if not success then
-                totalFailed = totalFailed + 1
-                errorMessages[photo:getFormattedMetadata('fileName')] = errorMessage
-                log:error("Unsuccessful photo analysis: " .. photo:getFormattedMetadata('fileName'))
-                if cause == "fatal" then
-                    log:trace("Fatal error received. Stopping.")
-                    progressScope:setCaption(LOC("$$$/lrc-ai-assistant/AnalyzeImageTask/analyzeFailed=Failed to analyze photo with AI ^1", tostring(i)))
-                    LrDialogs.showError(LOC "$$$/lrc-ai-assistant/AnalyzeImageTask/fatalError=Fatal error: Cannot continue. Check logs.")
-                    AnalyzeImageProvider.showUsedTokensDialog(totalInputTokens, totalOutputTokens)
-                    return false
-                elseif cause == "canceled" then
-                    log:trace("Canceled by user validation dialog.")
-                    AnalyzeImageProvider.showUsedTokensDialog(totalInputTokens, totalOutputTokens)
-                    return false
+            local skipAnalyze = false
+            if prefs.applyResultsToStacks then
+                local key = getStackKey(photo)
+                if key ~= nil and processedStacks[key] then
+                    log:trace("Skipping " .. photo:getFormattedMetadata('fileName') .. " (stack already processed this run)")
+                    totalSuccess = totalSuccess + 1
+                    skipAnalyze = true
                 end
-                    
-            else
-                totalSuccess = totalSuccess + 1
+            end
+
+            if not skipAnalyze then
+                log:trace("Analyzing " .. photo:getFormattedMetadata('fileName'))
+
+                local success, inputTokens, outputTokens, cause, errorMessage = exportAndAnalyzePhoto(photo, context, progressScope, selectedSet)
+                if inputTokens ~= nil then
+                    totalInputTokens = totalInputTokens + inputTokens
+                end
+                if outputTokens ~= nil then
+                    totalOutputTokens = totalOutputTokens + outputTokens
+                end
+                if not success then
+                    totalFailed = totalFailed + 1
+                    errorMessages[photo:getFormattedMetadata('fileName')] = errorMessage
+                    log:error("Unsuccessful photo analysis: " .. photo:getFormattedMetadata('fileName'))
+                    if cause == "fatal" then
+                        log:trace("Fatal error received. Stopping.")
+                        progressScope:setCaption(LOC("$$$/lrc-ai-assistant/AnalyzeImageTask/analyzeFailed=Failed to analyze photo with AI ^1", tostring(i)))
+                        LrDialogs.showError(LOC "$$$/lrc-ai-assistant/AnalyzeImageTask/fatalError=Fatal error: Cannot continue. Check logs.")
+                        AnalyzeImageProvider.showUsedTokensDialog(totalInputTokens, totalOutputTokens)
+                        return false
+                    elseif cause == "canceled" then
+                        log:trace("Canceled by user validation dialog.")
+                        AnalyzeImageProvider.showUsedTokensDialog(totalInputTokens, totalOutputTokens)
+                        return false
+                    end
+                        
+                else
+                    totalSuccess = totalSuccess + 1
+                    if prefs.applyResultsToStacks then
+                        local key = getStackKey(photo)
+                        if key ~= nil then
+                            processedStacks[key] = true
+                        end
+                    end
+                end
             end
             progressScope:setPortionComplete(i, totalPhotos)
             if progressScope:isCanceled() then

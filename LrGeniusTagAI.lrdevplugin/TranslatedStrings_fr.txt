@@ -113,3 +113,4 @@
 "$$$/lrc-ai-assistant/ErrorHandler/Error=Erreur"
 "$$$/lrc-ai-assistant/ErrorHandler/gatherLogs=Générer un rapport"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/discard=Jeter"
+"$$$/lrc-ai-assistant/PluginInfoDialogSections/applyResultsToStacks=Si la photo fait partie d'une pile, appliquer les résultats à toute la pile"

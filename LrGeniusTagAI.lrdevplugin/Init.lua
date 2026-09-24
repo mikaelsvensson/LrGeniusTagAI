@@ -185,6 +185,10 @@ if _G.prefs.submitCollectionNames == nil then
     _G.prefs.submitCollectionNames = false
 end
 
+if _G.prefs.applyResultsToStacks == nil then
+    _G.prefs.applyResultsToStacks = false
+end
+
 function _G.JSON.assert(b, m)
     LrDialogs.showError("Error decoding JSON response.")
 end

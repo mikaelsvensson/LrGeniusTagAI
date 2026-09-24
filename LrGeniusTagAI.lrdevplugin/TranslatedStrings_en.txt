@@ -119,6 +119,7 @@
 "$$$/lrc-ai-assistant/ErrorHandler/gatherLogs=Generate report"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/discard=Discard"
 "$$$/lrc-ai-assistant/PluginInfoDialogSections/validation=Enable validation"
+"$$$/lrc-ai-assistant/PluginInfoDialogSections/applyResultsToStacks=If photo is part of stack, apply results to entire stack"
 
 "$$$/lrc-ai-assistant/AnalyzeImageTask/SaveKeywords=Save keywords"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/SaveTitle=Save title"
