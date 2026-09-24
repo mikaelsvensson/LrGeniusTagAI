@@ -25,11 +25,14 @@ Lightroom, on the Library grid or during export.
   named prompt presets to switch between.
 - **Multi-language output** — generate results in English, German, French,
   Spanish, or Italian.
-- **Context-aware** — optionally submit existing GPS coordinates, keywords, or
-  folder names to the AI as extra context, or add free-text photo context
-  per-batch via a dialog before analysis.
+- **Context-aware** — optionally submit existing GPS coordinates, keywords,
+  folder names, or collection names to the AI as extra context, or add
+  free-text photo context per-batch via a dialog before analysis.
 - **Review before save** — optional validation dialog lets you approve, edit,
   or reject AI-generated results before they're written to the catalog.
+- **Folder stacks** — optionally analyze one photo per Lightroom folder stack
+  and copy the saved title, caption, alt text, and keywords to every stack
+  member (including unselected and collapsed members). Off by default.
 - **Preflight & cost estimate** — an optional preflight dialog shows what will
   be sent before a batch runs, and a running token/cost estimate is shown
   afterwards (Gemini/ChatGPT pricing tables included; no warranty on accuracy).
@@ -42,12 +45,16 @@ Lightroom, on the Library grid or during export.
 
 1. The plugin exports a temporary, resized JPEG copy of each selected photo
    (configurable long-edge size and quality — smaller/lower-quality exports
-   cost less and process faster).
-2. The image (plus any opted-in metadata like GPS/keywords/folder name) is
+   cost less and process faster). If the apply-to-stack option is enabled, later
+   selected photos that share a stack with one already analyzed in this
+   run are skipped (no extra export or API call).
+2. The image (plus any opted-in metadata like GPS/keywords/folder name/collection names) is
    sent to the configured AI provider's vision API along with your prompt.
 3. The AI's structured response is parsed into title/caption/alt text/keywords.
 4. After optional review, the results are written back to the photo's
-   Lightroom metadata, and the temp export file is deleted.
+   Lightroom metadata, and the temp export file is deleted. With the stack
+   option on, the same saved fields are also written to the other members of
+   that stack.
 
 ## Requirements
 
@@ -80,8 +87,12 @@ All settings live under **File → Plug-in Manager → LrGeniusTagAI**:
 - **Result language** — choose the output language.
 - **Generate** — toggle which fields to generate (caption, alt text, title,
   keywords) and whether to review results before saving.
-- **Submit existing metadata** — opt in to sending GPS, existing keywords, or
-  folder names as extra context to the AI.
+- **If photo is part of stack, apply results to entire stack** — when enabled,
+  analyze the first selected photo in each folder stack and copy the saved
+  title, caption, alt text, and keywords to all members of that stack.
+  Default off. Does not apply to collection stacks.
+- **Submit existing metadata** — opt in to sending GPS, existing keywords,
+  folder names, or collection names as extra context to the AI.
 - **Keyword hierarchy** — enable/disable categorized keywords and edit the
   category list; optionally nest keywords under a top-level, per-provider
   keyword.
