@@ -68,6 +68,8 @@ function PluginInfoDialogSections.startDialog(propertyTable)
 
     propertyTable.enableValidation = prefs.enableValidation
 
+    propertyTable.applyResultsToStacks = prefs.applyResultsToStacks
+
 end
 
 function PluginInfoDialogSections.sectionsForBottomOfDialog(f, propertyTable)
@@ -416,6 +418,18 @@ function PluginInfoDialogSections.sectionsForTopOfDialog(f, propertyTable)
                         width = share 'labelWidth',
                     },
                 },
+                f:row {
+                    f:spacer {
+                        width = share 'labelWidth',
+                    },
+                    f:checkbox {
+                        value = bind 'applyResultsToStacks',
+                        width = share 'checkboxWidth'
+                    },
+                    f:static_text {
+                        title = LOC "$$$/lrc-ai-assistant/PluginInfoDialogSections/applyResultsToStacks=If photo is part of stack, apply results to entire stack",
+                    },
+                },
             },
 
             f:group_box {
@@ -538,5 +552,6 @@ function PluginInfoDialogSections.endDialog(propertyTable)
     prefs.submitCollectionNames = propertyTable.submitCollectionNames
 
     prefs.enableValidation = propertyTable.enableValidation
+    prefs.applyResultsToStacks = propertyTable.applyResultsToStacks
 end
 

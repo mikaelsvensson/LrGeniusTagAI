@@ -112,6 +112,7 @@
 "$$$/lrc-ai-assistant/ErrorHandler/gatherLogs=Erstelle Bericht"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/discard=Verwerfen"
 "$$$/lrc-ai-assistant/PluginInfoDialogSections/validation=Ergebnisse überprüfen"
+"$$$/lrc-ai-assistant/PluginInfoDialogSections/applyResultsToStacks=Wenn das Foto zu einem Stapel gehört, Ergebnisse auf den gesamten Stapel anwenden"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/SaveKeywords=Übernehme Stichwörter"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/SaveTitle=Übernehme Titel"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/SaveCaption=Übernehme Beschreibung"
