@@ -42,6 +42,7 @@ local aiModels = {
     { title = "Google Gemini Flash 2.5", value = "gemini-2.5-flash" },
     { title = "Google Gemini Pro 2.5", value = "gemini-2.5-pro" },
     { title = "Google Gemini Flash 3.1 Lite", value = "gemini-3.1-flash-lite" },
+    { title = "Google Gemini Flash 3.5 Lite", value = "gemini-3.5-flash-lite" },
     { title = "Google Gemini Flash 3.5", value = "gemini-3.5-flash" },
     { title = "Google Gemini Pro 3.1", value = "gemini-3.1-pro-preview" },
     { title = "ChatGPT 5.4 Nano", value = "gpt-5.4-nano" },
@@ -85,6 +86,7 @@ Defaults.baseUrls['gemini-2.5-flash-lite'] = 'https://generativelanguage.googlea
 Defaults.baseUrls['gemini-2.5-flash'] = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key='
 Defaults.baseUrls['gemini-2.5-pro'] = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-pro:generateContent?key='
 Defaults.baseUrls['gemini-3.1-flash-lite'] = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-flash-lite:generateContent?key='
+Defaults.baseUrls['gemini-3.5-flash-lite'] = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash-lite:generateContent?key='
 Defaults.baseUrls['gemini-3.5-flash'] = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key='
 Defaults.baseUrls['gemini-3.1-pro-preview'] = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-3.1-pro-preview:generateContent?key='
 
@@ -122,6 +124,9 @@ Defaults.pricing["gemini-3.1-pro-preview"].output= 12 / 1000000
 Defaults.pricing["gemini-3.5-flash"] = {}
 Defaults.pricing["gemini-3.5-flash"].input = 1.5 / 1000000
 Defaults.pricing["gemini-3.5-flash"].output= 9 / 1000000
+Defaults.pricing["gemini-3.5-flash-lite"] = {}
+Defaults.pricing["gemini-3.5-flash-lite"].input = 0.30 / 1000000
+Defaults.pricing["gemini-3.5-flash-lite"].output= 2.5 / 1000000
 Defaults.pricing["gemini-3.1-flash-lite"] = {}
 Defaults.pricing["gemini-3.1-flash-lite"].input = 0.25 / 1000000
 Defaults.pricing["gemini-3.1-flash-lite"].output= 1.5 / 1000000
