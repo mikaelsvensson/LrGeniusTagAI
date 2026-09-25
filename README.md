@@ -33,6 +33,10 @@ Lightroom, on the Library grid or during export.
 - **Folder stacks** — optionally analyze one photo per Lightroom folder stack
   and copy the saved title, caption, alt text, and keywords to every stack
   member (including unselected and collapsed members). Off by default.
+- **Batch collection** — optionally create a new collection for each run under
+  the collection set `LrGeniusTag`, named with the localized date and time
+  (for example `Batch Thu Sep 24 23-31-00 2026`). Successfully processed photos
+  are added, including stack members when that option is on. Off by default.
 - **Preflight & cost estimate** — an optional preflight dialog shows what will
   be sent before a batch runs, and a running token/cost estimate is shown
   afterwards (Gemini/ChatGPT pricing tables included; no warranty on accuracy).
@@ -91,6 +95,10 @@ All settings live under **File → Plug-in Manager → LrGeniusTagAI**:
   analyze the first selected photo in each folder stack and copy the saved
   title, caption, alt text, and keywords to all members of that stack.
   Default off. Does not apply to collection stacks.
+- **Create a new collection for each run** — when enabled, each run creates a
+  collection under the collection set `LrGeniusTag`, named with the localized
+  date and time. Successfully processed photos are added, including stack
+  members when the stack option is on. Default off.
 - **Submit existing metadata** — opt in to sending GPS, existing keywords,
   folder names, or collection names as extra context to the AI.
 - **Keyword hierarchy** — enable/disable categorized keywords and edit the

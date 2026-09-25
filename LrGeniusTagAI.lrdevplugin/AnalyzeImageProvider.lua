@@ -416,6 +416,7 @@ function AnalyzeImageProvider.showPreflightDialog(ctx)
 
     propertyTable.enableValidation = prefs.enableValidation
     propertyTable.applyResultsToStacks = prefs.applyResultsToStacks
+    propertyTable.createBatchCollection = prefs.createBatchCollection
 
     propertyTable.ai = prefs.ai
     propertyTable.showCosts = prefs.showCosts
@@ -641,6 +642,18 @@ function AnalyzeImageProvider.showPreflightDialog(ctx)
             },
         },
         f:row {
+            f:spacer {
+                width = share 'labelWidth',
+            },
+            f:checkbox {
+                value = bind 'createBatchCollection',
+                width = share 'checkboxWidth',
+            },
+            f:static_text {
+                title = LOC "$$$/lrc-ai-assistant/PluginInfoDialogSections/createBatchCollection=Create a new collection for each run",
+            },
+        },
+        f:row {
             f:static_text {
                 title = LOC "$$$/lrc-ai-assistant/AnalyzeImageTask/PhotoContextDialogData=Photo Context",
                 width = share 'labelWidth',
@@ -673,6 +686,7 @@ function AnalyzeImageProvider.showPreflightDialog(ctx)
     
         prefs.enableValidation = propertyTable.enableValidation
         prefs.applyResultsToStacks = propertyTable.applyResultsToStacks
+        prefs.createBatchCollection = propertyTable.createBatchCollection
     
         prefs.ai = propertyTable.ai
         prefs.showCosts = propertyTable.showCosts

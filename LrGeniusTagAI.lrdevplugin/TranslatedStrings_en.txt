@@ -120,7 +120,10 @@
 "$$$/lrc-ai-assistant/AnalyzeImageTask/discard=Discard"
 "$$$/lrc-ai-assistant/PluginInfoDialogSections/validation=Enable validation"
 "$$$/lrc-ai-assistant/PluginInfoDialogSections/applyResultsToStacks=If photo is part of stack, apply results to entire stack"
-
+"$$$/lrc-ai-assistant/PluginInfoDialogSections/createBatchCollection=Create a new collection for each run"
+"$$$/lrc-ai-assistant/AnalyzeImageTask/batchCollectionName=Batch %Y-%m-%d %H:%M:%S"
+"$$$/lrc-ai-assistant/AnalyzeImageTask/createBatchCollection=Create batch collection"
+"$$$/lrc-ai-assistant/AnalyzeImageTask/addToBatchCollection=Add photo to batch collection"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/SaveKeywords=Save keywords"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/SaveTitle=Save title"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/SaveCaption=Save caption"

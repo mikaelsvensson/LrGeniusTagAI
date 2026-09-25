@@ -52,7 +52,16 @@ local function applyAnalysisResults(photo, keywords, title, caption, altText, sa
     )
 end
 
-local function exportAndAnalyzePhoto(photo, ctx, progressScope, selectedSet)
+local function addPhotoToBatchCollection(photo, batchCollection)
+    if batchCollection == nil then
+        return
+    end
+    photo.catalog:withWriteAccessDo(LOC "$$$/lrc-ai-assistant/AnalyzeImageTask/addToBatchCollection=Add photo to batch collection", function()
+        batchCollection:addPhotos({ photo })
+    end)
+end
+
+local function exportAndAnalyzePhoto(photo, ctx, progressScope, selectedSet, batchCollection)
     local tempDir = LrPathUtils.getStandardFilePath('temp')
     local photoName = LrPathUtils.leafName(photo:getFormattedMetadata('fileName'))
     local catalog = LrApplication.activeCatalog()
@@ -175,6 +184,7 @@ local function exportAndAnalyzePhoto(photo, ctx, progressScope, selectedSet)
             }
 
             applyAnalysisResults(photo, keywords, title, caption, altText, saveFlags, ai, "user selected, analyzed")
+            addPhotoToBatchCollection(photo, batchCollection)
 
             if prefs.applyResultsToStacks and photo:getRawMetadata("isInStackInFolder") then
                 local members = photo:getRawMetadata("stackInFolderMembers")
@@ -186,6 +196,7 @@ local function exportAndAnalyzePhoto(photo, ctx, progressScope, selectedSet)
                                 source = "user selected, stack membership"
                             end
                             applyAnalysisResults(member, keywords, title, caption, altText, saveFlags, ai, source)
+                            addPhotoToBatchCollection(member, batchCollection)
                         end
                     end
                 end
@@ -244,6 +255,16 @@ LrTasks.startAsyncTask(function()
             end
         end
 
+        local batchCollection = nil
+        if prefs.createBatchCollection then
+            catalog:withWriteAccessDo(LOC "$$$/lrc-ai-assistant/AnalyzeImageTask/createBatchCollection=Create batch collection", function()
+                local parent = catalog:createCollectionSet("LrGeniusTag", nil, true)
+                local name = os.date(LOC "$$$/lrc-ai-assistant/AnalyzeImageTask/batchCollectionName=Batch %Y-%m-%d %H:%M:%S")
+                name = string.gsub(name, '[\\/:*?"<>|]', '-')
+                batchCollection = catalog:createCollection(name, parent, true)
+            end)
+        end
+
         local progressScope = LrProgressScope({
             title = "Analyzing photos with " .. prefs.ai,
             functionContext = context,
@@ -278,7 +299,7 @@ LrTasks.startAsyncTask(function()
             if not skipAnalyze then
                 log:trace("Analyzing " .. photo:getFormattedMetadata('fileName'))
 
-                local success, inputTokens, outputTokens, cause, errorMessage = exportAndAnalyzePhoto(photo, context, progressScope, selectedSet)
+                local success, inputTokens, outputTokens, cause, errorMessage = exportAndAnalyzePhoto(photo, context, progressScope, selectedSet, batchCollection)
                 if inputTokens ~= nil then
                     totalInputTokens = totalInputTokens + inputTokens
                 end
