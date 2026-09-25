@@ -109,7 +109,10 @@
 "$$$/lrc-ai-assistant/Defaults/french=Français"
 "$$$/lrc-ai-assistant/PluginInfoDialogSections/replaceSS=Remplacer ß par ss"
 "$$$/lrc-ai-assistant/PluginInfoDialogSections/CopyLogToDesktop=Copier le fichier journal sur le bureau"
-
+"$$$/lrc-ai-assistant/PluginInfoDialogSections/createBatchCollection=Créer une nouvelle collection pour chaque exécution"
+"$$$/lrc-ai-assistant/AnalyzeImageTask/batchCollectionName=Lot %c"
+"$$$/lrc-ai-assistant/AnalyzeImageTask/createBatchCollection=Créer la collection du lot"
+"$$$/lrc-ai-assistant/AnalyzeImageTask/addToBatchCollection=Ajouter la photo à la collection du lot"
 "$$$/lrc-ai-assistant/ErrorHandler/Error=Erreur"
 "$$$/lrc-ai-assistant/ErrorHandler/gatherLogs=Générer un rapport"
 "$$$/lrc-ai-assistant/AnalyzeImageTask/discard=Jeter"

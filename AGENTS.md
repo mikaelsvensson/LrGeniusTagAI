@@ -25,7 +25,7 @@ Plugin code lives in `LrGeniusTagAI.lrdevplugin/`.
 | `AiModelAPI.lua` | Dispatches to provider APIs; builds the base task/system prompt |
 | `GeminiAPI.lua`, `ChatGptAPI.lua`, `OllamaAPI.lua`, `LmStudioAPI.lua` | Provider HTTP + `analyzeImage` |
 | `Defaults.lua` | Models, URLs, pricing, default **prompts** — not submit-metadata prefs |
-| `TranslatedStrings_*.txt` | Localization (`en`, `de`, `fr`) |
+| `TranslatedStrings_*.txt` | Localization. `de` and `fr` load for those UI languages; `en` is not loaded |
 
 Do not edit vendored `JSON.lua` or `inspect.lua`.
 
@@ -59,6 +59,16 @@ Debug: `log:trace` is the reliable check. Gemini/ChatGPT dump the request body v
 - Folder stacks are `getRawMetadata` keys (`isInStackInFolder`, `stackInFolderMembers`, `topOfStackInFolderContainingPhoto`), not `LrPhoto` methods. Collection stacks are not in the SDK. Must run inside `LrTasks`.
 - `catalog:getTargetPhotos()` is the visible filmstrip selection; a collapsed stack typically yields only the top photo.
 
+## Localization (`LOC`)
+
+`LOC "$$$/lrc-ai-assistant/Path/Key=English default"` looks up the key only in the `TranslatedStrings` file for the current Lightroom UI language.
+
+- English is the text after `=` in the Lua call. `TranslatedStrings_en.txt` is not read. Change English copy there, in the `LOC` call.
+- `TranslatedStrings_de.txt` and `TranslatedStrings_fr.txt` apply only when the UI language is German or French.
+- Any other language uses that same inline default. It does not fall back to `TranslatedStrings_en.txt`.
+
+Still add the same key to all three `TranslatedStrings_*.txt` files.
+
 ## Style
 
 Match existing files; do not reformat unrelated code.
@@ -68,7 +78,7 @@ Match existing files; do not reformat unrelated code.
 - Instance APIs: `Module.__index = Module` and `function Module:new()` via `setmetatable`.
 - Helpers as `function Module.foo()`; instance methods as `function Module:bar()`.
 - Globals from `Init.lua`: `prefs`, `log`, `JSON`, plus `Lr*` SDK namespaces.
-- User-facing strings: `LOC "$$$/lrc-ai-assistant/Path/Key=English default"` and add the same key to all `TranslatedStrings_*.txt` files.
+- User-facing strings: `LOC` with the English default in the call. See [Localization (`LOC`)](#localization-loc).
 - Catalog mutations only inside `catalog:withWriteAccessDo` / `withPrivateWriteAccessDo`.
 - Background work: `LrTasks.startAsyncTask` + `LrFunctionContext.callWithContext`. HTTP: `LrHttp`. Errors: `ErrorHandler.handleError`. Log: `log:trace` / `log:error`.
 - New AI providers: implement `:new()` and `:analyzeImage(filePath, metadata)` like the existing `*API.lua` files, then register in `AiModelAPI` and `Defaults`.
